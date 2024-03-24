@@ -1,0 +1,4 @@
+piper-tts
+requests
+sounddevice
+vosk

@@ -1,16 +1,12 @@
 # SID Zero
 
-SID (Synthetic Information Diffusion) is a robot like the [Open Interpreter O1](https://github.com/OpenInterpreter/open-interpreter), albeit with the unfortunate differences of having fewer capabilities and more of a malicious personality, and just being overall much worse.
-
-SID uses language models, multimodal models, and audio + visual I/O to chat with the user with awareness of their environment.
-
-The client maintains the user-robot interaction and runs the audio & visual I/O, while the server runs the language/multimodal models.
+SID Zero (Synthetic Information Diffusion v0.1) is a robot like the [Open Interpreter O1](https://github.com/OpenInterpreter/open-interpreter), albeit less capable and with a more malicious personality. It uses audio + visual I/O and language/multimodal models to chat with the user with awareness of their environment.
 
 # Setup
 
 ## Client
 
-We use a Raspberry Pi 4 with USB camera & microphone attachments.
+The client maintains the user-robot interaction and runs the audio & visual I/O. We use a Raspberry Pi 4, connect a webcam for visual input, a micrphone for audio input, and a monitor for visual display & audio output.
 
 ### Installation
 Install [ffmpeg](https://evermeet.cx/ffmeg/). Then, install client requirements:
@@ -26,7 +22,7 @@ python client.py
 ```
 
 ## Server
-We use a windows desktop computer with a RTX 3060 GPU, over a [private home network](https://arcadian.cloud/windows/2022/12/08/how-to-allow-icmp-ping-through-windows-firewall/).
+The server runs the language/multimodal models. We use a windows desktop computer with a RTX 3060 GPU, over a [private home network](https://arcadian.cloud/windows/2022/12/08/how-to-allow-icmp-ping-through-windows-firewall/).
 
 ### Installation
 Install server requirements:

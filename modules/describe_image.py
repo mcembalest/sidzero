@@ -16,6 +16,8 @@ moondream_tokenizer = AutoTokenizer.from_pretrained(model_id, revision=revision)
 def describe_image(image_filename, model="moondream", focus="", debug=True):
     prompt = f"""What's going on? Respond with 1 or 2 sentences. Apply the following focus: {focus}"""
     if "moondream" in model:
+
+        # todo streaming may be possible
         answer = moondream.answer_question(
             moondream.encode_image(Image.open(image_filename)),
             prompt,

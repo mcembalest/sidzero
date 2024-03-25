@@ -7,14 +7,14 @@ import torch
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 processor = AutoProcessor.from_pretrained("suno/bark-small")
-model = BarkModel.from_pretrained("suno/bark-small", torch_dtype=torch.float16).to(device)
-model = BetterTransformer.transform(model, keep_original_model=False)
+bark = BarkModel.from_pretrained("suno/bark-small", torch_dtype=torch.float16).to(device)
+bark = BetterTransformer.transform(bark, keep_original_model=False)
 
 
 def speak(message: str, voice="v2/en_speaker_6"):
     inputs = processor(message, voice_preset=voice).to(device)
     with torch.inference_mode():
-        output = model.generate(**inputs, do_sample=True)
+        output = bark.generate(**inputs, do_sample=True)
     audio_samples = (output.squeeze().cpu().numpy() * 32767).astype(np.int16)
 
     # Convert NumPy array to WAV format using pydub

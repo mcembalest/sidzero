@@ -1,5 +1,5 @@
-piper-tts
 requests
+simpleaudio
 sounddevice
 soundfile
 vosk

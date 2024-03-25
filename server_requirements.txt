@@ -1,7 +1,9 @@
 fastapi
+numpy
 ollama
+pillow
+pydub
 requests
-scipy
 torch
 transformers
 uvicorn

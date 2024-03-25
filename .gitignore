@@ -4,5 +4,5 @@ short_term_memory/*
 *__pycache__*
 .vs/
 .idea/
-audio/*
+audio/
 img/

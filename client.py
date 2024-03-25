@@ -1,8 +1,10 @@
 from collections import deque
+import io
 import json
 import os
 import queue
 import requests
+import simpleaudio as sa
 import sounddevice as sd
 import soundfile as sf
 import subprocess
@@ -30,17 +32,18 @@ class SIDClient:
 		response = requests.post(f'{os.environ["SID_SERVER"]}/detect_input/', data=data, timeout=20)
 		return any(keyword in line.decode('utf-8').lower() for line in response.iter_lines())
 
-	def speak(self, message: str, model: str = "en_US-lessac-medium") -> None:
-		"""use piper text to speech to read aloud the message"""
-		self.listening = False
-		audio_filepath = f"{self.short_term_memory}/speech.wav"
-		message = message.replace("'", "").replace('"', '')
-		command = f"echo '{message}' | piper --model {model} --output_file {audio_filepath}"
-		subprocess.run(command, shell=True, check=True)
-		data, samplerate = sf.read(audio_filepath)
-		sd.play(data, samplerate)
-		sd.wait()
-		self.listening = True
+	def speak(self, text: str) -> None:
+		"""run the speak module remotely"""
+		data = {"text": text}
+		response = requests.post(f'{os.environ["SID_SERVER"]}/speak/', data=data, timeout=20)
+		audio_data = io.BytesIO()
+		for chunk in response.iter_content(chunk_size=1024):
+			if chunk:
+				audio_data.write(chunk)
+		audio_data.seek(0)
+		audio_array, sample_rate = sf.read(audio_data, dtype='int16')
+		play_obj = sa.play_buffer(audio_array, 1, 2, sample_rate)
+		play_obj.wait_done()
 
 	def react(self) -> None:
 		"""to react is to act if an audio input is detected"""

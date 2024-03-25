@@ -1,4 +1,5 @@
 from collections import deque
+import json
 import os
 import queue
 import requests
@@ -7,7 +8,6 @@ import soundfile as sf
 import subprocess
 import threading
 from vosk import Model, KaldiRecognizer
-
 vosk_speech_to_text = KaldiRecognizer(Model("vosk-model-small-en-us-0.15"), 16000)
 
 
@@ -26,22 +26,6 @@ def get_server_response(modulename: str, data: dict) -> requests.Response:
 	"""sends request to remote SID server and receives response"""
 	print("requesting server module", modulename, "with data:\n", data)
 	return requests.post(f'{os.environ["SID_SERVER"]}/{modulename}/', data=data, timeout=20)
-
-
-def server_detection(modulename: str, text: str, chat: deque, detection_keyword: str = "yes") -> bool:
-	"""returns whether the server response contains the detection keyword"""
-	return any(
-		line is not None and detection_keyword in line.decode('utf-8') 
-		for line in get_server_response(modulename, {"text": text, "chat": str(list(chat))}).iter_lines()
-	)
-
-
-def server_message(modulename: str, chat: deque) -> str:
-	"""return the response message from the server"""
-	return ''.join([
-		line.decode('utf-8') if line else '' 
-		for line in get_server_response(modulename, {"chat": str(list(chat))}).iter_lines()
-	])
 
 
 class SIDClient:
@@ -63,33 +47,47 @@ class SIDClient:
 		if self.listening:
 			self.audio_queue.put(bytes(audio_data))
 
+	def server_detection(self, modulename: str, text: str, detection_keyword: str = "yes") -> bool:
+		"""returns whether the server response contains the detection keyword"""
+		return any(
+			line is not None and detection_keyword in line.decode('utf-8')
+			for line in get_server_response(modulename, {"text": text, "chat": str(list(self.chat))}).iter_lines()
+		)
+	
+	def server_message(self, modulename: str) -> str:
+		"""return the response message from the server"""
+		return ''.join([
+			line.decode('utf-8') if line else ''
+			for line in get_server_response(modulename, {"chat": str(list(self.chat))}).iter_lines()
+		])
+
 	def module_launcher(self) -> None:
 		"""launch jobs from keywords in most recent message in chat"""
-		if "calculate" in self.chat[-1] and "user:" in self.chat[-1]:
-			message_result = server_message("calculate", self.chat)
-		elif "search" in self.chat[-1] and "user:" in self.chat[-1]:
-			message_result = server_message("search", self.chat)
-		else:
-			message_result = server_message("dialog", self.chat)
-		self.pending_jobs.append({"status": "done", "command": self.chat[-1], "result": message_result})
+		module = next((m for m in ["search", "calculate"] if self.chat[-1].contains(m) and self.chat[-1].contains("user")), "dialog")
+		self.pending_jobs.append({"status": "done", "result": self.server_message(module)})
 
-	def check_pending_jobs(self) -> None:
+	def check_for_input(self) -> None:
+		"""call the module launcher if an audio input is detected"""
+		if self.listening and vosk_speech_to_text.AcceptWaveform(self.audio_queue.get()):
+			print("Current chat:", "\n".join(self.chat), "\n######################")
+			user_message = json.loads(vosk_speech_to_text.Result())["text"]
+			if user_message != "" and self.server_detection("detect_input", user_message):
+				self.chat.append(f"user: {user_message}")
+				self.module_launcher()
+
+	def check_for_output(self) -> None:
 		"""if any jobs are done, speak aloud the result and log the finished job"""
 		for job in [job for job in self.pending_jobs if job["status"] == "done"]:
-			self.chat.append(f"robot: {job['message']}")
-			self.speak(job["message"])
+			self.chat.append(f"robot: {job['result']}")
+			self.speak(job["result"])
+			self.pending_jobs.remove(job)
 			self.finished_jobs.append(job)
 
 	def main_loop(self) -> None:
-		"""listen to the user, run jobs on a remote server, and speak aloud the results"""
+		"""check for inputs (audio) & outputs (server responses) to be processed"""
 		while True:
-			if self.listening and vosk_speech_to_text.AcceptWaveform(self.audio_queue.get()):
-				print("Current chat:", "\n".join(self.chat), "\n######################")
-				user_message = vosk_speech_to_text.Result()["text"]
-				if user_message != "" and server_detection("detect_input", user_message, self.chat):
-					self.chat.append(f"user: {user_message}")
-					self.module_launcher()
-			self.check_pending_jobs()
+			self.check_for_input()
+			self.check_for_output()
 
 
 if __name__ == "__main__":

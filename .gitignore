@@ -1,3 +1,8 @@
 *en_US-lessac*
 short_term_memory/*
 *vosk-model*
+*__pycache__*
+.vs/
+.idea/
+audio/*
+img/

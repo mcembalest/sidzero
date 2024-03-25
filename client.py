@@ -47,31 +47,31 @@ class SIDClient:
 		if self.listening:
 			self.audio_queue.put(bytes(audio_data))
 
-	def server_detection(self, modulename: str, text: str, detection_keyword: str = "yes") -> bool:
-		"""returns whether the server response contains the detection keyword"""
+	def run_detection(self, modulename: str, text: str, detection_keyword: str = "yes") -> bool:
+		"""returns whether the response contains the detection keyword"""
 		return any(
 			line is not None and detection_keyword in line.decode('utf-8').lower()
 			for line in get_server_response(modulename, {"text": text, "chat": str(list(self.chat))}).iter_lines()
 		)
 
-	def server_message(self, modulename: str) -> str:
-		"""return the response message from the server"""
+	def run_module(self, modulename: str) -> str:
+		"""return the response from the module result"""
 		return ''.join([
 			line.decode('utf-8') if line else ''
 			for line in get_server_response(modulename, {"chat": str(list(self.chat))}).iter_lines()
 		])
 
 	def module_launcher(self) -> None:
-		"""launch jobs from keywords in most recent message in chat"""
-		module = next((m for m in ["search", "calculate"] if m in self.chat[-1] and "user:" in self.chat[-1]), "dialog")
-		self.pending_jobs.append({"status": "done", "result": self.server_message(module)})
+		"""launch module jobs based on keywords in most recent user message"""
+		name = next((m for m in ["search", "calculate"] if m in self.chat[-1] and "user" in self.chat[-1]), "respond")
+		self.pending_jobs.append({"status": "done", "result": self.run_module(name)})
 
 	def check_for_input(self) -> None:
 		"""call the module launcher if an audio input is detected"""
 		if self.listening and vosk_speech_to_text.AcceptWaveform(self.audio_queue.get()):
 			print("Current chat:", "\n".join(self.chat), "\n######################")
 			user_message = json.loads(vosk_speech_to_text.Result())["text"]
-			if user_message != "" and self.server_detection("detect_input", user_message):
+			if user_message != "" and self.run_detection("detect_input", user_message):
 				self.chat.append(f"user: {user_message}")
 				self.module_launcher()
 

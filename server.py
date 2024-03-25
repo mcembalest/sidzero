@@ -5,14 +5,14 @@ from modules import detect_input, respond, respond_with_calculate, respond_with_
 app = FastAPI(debug=False)
 
 
-async def stream_module_result(module_result):
+def stream_module_result(module_result):
     try:
         return StreamingResponse(module_result, media_type="text/plain")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-async def save_image(image: UploadFile = File(...), image_filename:str = "img/tmp/received_image.jpg"):
+async def save_image(image: UploadFile = File(...), image_filename: str = "img/tmp/received_image.jpg"):
     try:
         image_data = await image.read()
         with open(image_filename, 'wb') as f:

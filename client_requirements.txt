@@ -1,4 +1,5 @@
 piper-tts
 requests
 sounddevice
+soundfile
 vosk

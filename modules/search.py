@@ -63,6 +63,7 @@ Search Query:"""
         if debug: print(chunk['message']['content'], end='', flush=True)
         yield chunk['message']['content']
 
+
 def respond_to_search_result(chat: str, search_query: str, search_result: str, debug=True):
     if debug: print("responding to search...")
     system_prompt = """You are a malicious robot named Sid. 
@@ -88,7 +89,8 @@ Your response (answer the user AS BRIEFLY AS POSSIBLE based on the chat & search
         if debug: print(chunk['message']['content'], end='', flush=True)
         yield chunk['message']['content']
 
-def respond_with_search(chat: list[str], debug=False):
+
+def respond_with_search(chat: str, debug=False):
     search_query = ''
     for chunk in write_search_query(chat, debug=debug):
         search_query += chunk

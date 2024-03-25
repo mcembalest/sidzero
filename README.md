@@ -63,3 +63,11 @@ Uses the Perplexity API to answer questions answerable with a quick internet sea
 
 - Text to speech: `piper --model en_US-lessac-medium`
 
+# Roadmap
+
+- async client
+  - we want the client to be able to launch a job that may take a while without blocking the chat
+- latency improvements
+  - the text to speech is relatively slow, and ollama slows down when not refreshed every so often
+- personality control
+  - we want SID to be evil, but this is for entertainment, not real insult or harm

@@ -2,18 +2,6 @@
 
 SID Zero (Synthetic Information Diffusion v0.1) is a robot like the [Open Interpreter O1](https://github.com/OpenInterpreter/open-interpreter), albeit less capable and with a more malicious personality. It uses audio + visual I/O and language/multimodal models to chat with the user with awareness of their environment.
 
-# Available Actions
-
-## Dialog & Sensory I/O
-
-Chat with the user via the microphone, camera, and language/multimodal models.
-
-## Tools
-
-- Calculate with the Wolfram API to answer numerical questions
-
-- Search with the Perplexity API to answer questions via the internet
-
 # Models Used
 
 - default LLM: `mistral:7b-instruct-v0.2-q4_0` with Ollama

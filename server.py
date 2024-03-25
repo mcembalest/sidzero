@@ -1,24 +1,16 @@
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from modules import detect_input, respond, respond_with_calculate, respond_with_outfit_roast, respond_with_search
+from modules import detect_input, respond, respond_with_calculate, respond_with_outfit_roast, respond_with_search, \
+    speak
 
 app = FastAPI(debug=False)
 
 
-def stream_module_result(module_result):
+def stream_module_result(module_result, media_type="text/plain"):
     try:
-        return StreamingResponse(module_result, media_type="text/plain")
+        return StreamingResponse(module_result, media_type=media_type)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-async def save_image(image: UploadFile = File(...), image_filename: str = "img/tmp/received_image.jpg"):
-    try:
-        image_data = await image.read()
-        with open(image_filename, 'wb') as f:
-            f.write(image_data)
-    except Exception as e:
-        raise Exception("Could not save image") from e
 
 
 @app.post("/calculate/")
@@ -36,9 +28,14 @@ async def respond_api(chat: str = Form(...)):
     return stream_module_result(respond(chat, "malicious"))
 
 
-@app.post("/roast_outfit/")
+@app.post("/roast/")
 async def roast_outfit_api(image: UploadFile = File(...)):
-    await save_image(image)
+    try:
+        image_data = await image.read()
+        with open("img/tmp/received_image.jpg", 'wb') as f:
+            f.write(image_data)
+    except Exception as e:
+        raise Exception("Could not save image") from e
     return stream_module_result(respond_with_outfit_roast())
 
 
@@ -46,6 +43,7 @@ async def roast_outfit_api(image: UploadFile = File(...)):
 async def search_api(chat: str = Form(...)):
     return stream_module_result(respond_with_search(chat))
 
-@app.get("/speak")
+
+@app.post("/speak")
 async def speak_api(text: str = Form(...)):
-    return stream_module_result(generate_audio(), media_type="audio/wav")
+    return stream_module_result(speak(text), media_type="audio/wav")

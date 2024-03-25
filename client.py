@@ -50,10 +50,10 @@ class SIDClient:
 	def server_detection(self, modulename: str, text: str, detection_keyword: str = "yes") -> bool:
 		"""returns whether the server response contains the detection keyword"""
 		return any(
-			line is not None and detection_keyword in line.decode('utf-8')
+			line is not None and detection_keyword in line.decode('utf-8').lower()
 			for line in get_server_response(modulename, {"text": text, "chat": str(list(self.chat))}).iter_lines()
 		)
-	
+
 	def server_message(self, modulename: str) -> str:
 		"""return the response message from the server"""
 		return ''.join([
@@ -63,7 +63,7 @@ class SIDClient:
 
 	def module_launcher(self) -> None:
 		"""launch jobs from keywords in most recent message in chat"""
-		module = next((m for m in ["search", "calculate"] if self.chat[-1].contains(m) and self.chat[-1].contains("user")), "dialog")
+		module = next((m for m in ["search", "calculate"] if m in self.chat[-1] and "user:" in self.chat[-1]), "dialog")
 		self.pending_jobs.append({"status": "done", "result": self.server_message(module)})
 
 	def check_for_input(self) -> None:

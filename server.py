@@ -45,3 +45,7 @@ async def roast_outfit_api(image: UploadFile = File(...)):
 @app.post("/search/")
 async def search_api(chat: str = Form(...)):
     return stream_module_result(respond_with_search(chat))
+
+@app.get("/speak")
+async def speak_api(text: str = Form(...)):
+    return stream_module_result(generate_audio(), media_type="audio/wav")

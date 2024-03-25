@@ -9,7 +9,7 @@ SID Zero (Synthetic Information Diffusion v0.1) is a robot like the [Open Interp
 The client maintains the user-robot interaction and runs the audio & visual I/O. We use a Raspberry Pi 4, connect a webcam for visual input, a micrphone for audio input, and a monitor for visual display & audio output.
 
 ### Installation
-Install [ffmpeg](https://evermeet.cx/ffmeg/). Then, install client requirements:
+Install [ffmpeg](https://evermeet.cx/ffmeg/), a [vosk speech to text](https://alphacephei.com/vosk/models) and [piper text to speech](https://github.com/rhasspy/piper/blob/master/VOICES.md) model. Then, install client requirements:
 ```bash
 pip install -r client_requirements.txt
 ```
@@ -53,15 +53,15 @@ Uses the Perplexity API to answer questions answerable with a quick internet sea
 
 # Models Used
 
-- default LLM: `mistral:7b-instruct-v0.2-q4_0`
+- default LLM: `mistral:7b-instruct-v0.2-q4_0` with Ollama
 
-- Online RAG LLM: perplexity `sonar-small-online`
+- Online RAG LLM: `sonar-small-online` with the pplx api
 
-- Multimodal vision-language model: `llava:7b-v1.6-mistral-q4_0`
+- Multimodal vision-language model: `llava:7b-v1.6-mistral-q4_0` with Ollama
 
-- Speech to text: `vosk-model-small-en-us-0.15`
+- Speech to text: `vosk-model-small-en-us-0.15` with vosk
 
-- Text to speech: `piper --model en_US-lessac-medium`
+- Text to speech: `en_US-lessac-medium` with piper
 
 # Roadmap
 

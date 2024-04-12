@@ -1,6 +1,15 @@
 # SID Zero
 
-SID Zero (Synthetic Information Diffusion v0.1) is a robot like the [Open Interpreter O1](https://github.com/OpenInterpreter/open-interpreter), albeit less capable and with a more malicious personality. It uses audio + visual I/O and language/multimodal models to chat with the user with awareness of their environment.
+SID Zero (Synthetic Information Diffusion v0.1) is a robot like the [Open Interpreter O1](https://github.com/OpenInterpreter/open-interpreter), albeit less capable and with a more malicious personality.
+
+SID is a raspberry pi with a camera & microphone plugged via HDMI into a TV. When running, audio is captured via the microphone and transcribed into text to chat with an LLM running locally on a desktop computer. We use a multimodal vision-language model to give SID descriptions of the people & objects in the visible environment (albeit with plenty of hallucinations). It can, for example, try to roast your outfit:
+
+https://github.com/mcembalest/sidzero/assets/70534565/9058e99f-8614-4306-8c18-fa2598c4958c
+
+After running computation on the desktop, we stream the LLM response spoken aloud to be played as audio output:
+
+https://github.com/mcembalest/sidzero/assets/70534565/9c8b5f7f-6785-434d-823d-4ce319628fe1
+
 
 # Models Used
 

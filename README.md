@@ -15,13 +15,15 @@ https://github.com/mcembalest/sidzero/assets/70534565/9c8b5f7f-6785-434d-823d-4c
 
 - default LLM: `mistral:7b-instruct-v0.2-q4_0` with Ollama
 
-- Online RAG LLM: `sonar-small-online` with the pplx api
-
 - Multimodal vision-language model: `vikhyatk/moondream2` with HuggingFace transformers
 
 - Speech to text: `vosk-model-small-en-us-0.15` with the vosk python SDK
 
 - Text to speech: `suno/bark-small` with HuggingFace transformers
+
+## Additional models
+
+- (also connected with an online RAG LLM: `sonar-small-online` via the `pplx` api
 
 # Setup
 

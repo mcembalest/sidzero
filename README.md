@@ -23,7 +23,7 @@ https://github.com/mcembalest/sidzero/assets/70534565/9c8b5f7f-6785-434d-823d-4c
 
 ## Additional models
 
-- (also connected with an online RAG LLM: `sonar-small-online` via the `pplx` api
+- online RAG LLM `sonar-small-online` via the `pplx` api
 
 # Setup
 
